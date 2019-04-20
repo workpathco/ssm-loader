@@ -112,7 +112,7 @@ func main() {
 	svc := ssm.New(sess)
 
 	workpathEnv := os.Getenv("WORKPATH_ENV")
-	appName := os.Getenv("PROJECT_NAME")
+	appName := os.Getenv("APP_NAME")
 
 	paramMap := getOSEnv()
 
