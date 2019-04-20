@@ -30,7 +30,7 @@ func getParameters(params *getParametersInput, itr int) ([]*ssm.Parameter, error
 	}
 
 	// Sleep for a tenth of a second before doing the next fetch
-	// so we don't overload AWS's servers
+	// so we don't get rate-limited
 	time.Sleep(100 * time.Millisecond)
 
 	result, err := params.Client.GetParametersByPath(&ssm.GetParametersByPathInput{
@@ -149,8 +149,8 @@ func main() {
 	paramMap.AddParams(allParams)
 	paramMap.ReplaceInterpolations()
 
-	// FIXME: Replace with actual command args
-	cmd := exec.Command("/bin/sh", "-c", "echo \"$APP_URL\"")
+	args := os.Args[1:]
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stdout = os.Stdout
 	cmd.Env = paramMap.StringArray()
 	cmd.Start()
