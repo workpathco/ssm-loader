@@ -155,6 +155,4 @@ func main() {
 	cmd.Env = paramMap.StringArray()
 	cmd.Start()
 	cmd.Wait()
-
-	os.Exit(0)
 }
