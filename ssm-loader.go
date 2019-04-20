@@ -111,31 +111,35 @@ func main() {
 
 	svc := ssm.New(sess)
 
-	workpathEnv := os.Getenv("WORKPATH_ENV")
 	appName := os.Getenv("APP_NAME")
+	appEnv := os.Getenv("APP_ENV")
 
 	paramMap := getOSEnv()
 
-	if workpathEnv == "" {
-		workpathEnv = "development"
+	if appEnv == "" {
+		appEnv = os.Getenv("WORKPATH_ENV")
 	}
 
-	sharedParams, sharedErr := getParameters(&getParametersInput{
-		Client: svc,
-		Path:   aws.String(fmt.Sprintf("/%s/", workpathEnv)),
-	}, 0)
+	var allParams []*ssm.Parameter
 
-	if sharedErr != nil {
-		fmt.Println("Error fetching shared params: ", sharedErr.Error())
-		os.Exit(1)
+	if appEnv != "" {
+		sharedParams, sharedErr := getParameters(&getParametersInput{
+			Client: svc,
+			Path:   aws.String(fmt.Sprintf("/%s/", appEnv)),
+		}, 0)
+
+		if sharedErr != nil {
+			fmt.Println("Error fetching shared params: ", sharedErr.Error())
+			os.Exit(1)
+		}
+
+		allParams = sharedParams
 	}
-
-	allParams := sharedParams
 
 	if appName != "" {
 		appParams, appErr := getParameters(&getParametersInput{
 			Client: svc,
-			Path:   aws.String(fmt.Sprintf("/%s/%s/", workpathEnv, appName)),
+			Path:   aws.String(fmt.Sprintf("/%s/%s/", appEnv, appName)),
 		}, 0)
 
 		if appErr != nil {
@@ -143,7 +147,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		allParams = append(sharedParams, appParams...)
+		allParams = append(allParams, appParams...)
 	}
 
 	paramMap.AddParams(allParams)
