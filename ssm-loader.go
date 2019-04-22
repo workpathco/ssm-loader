@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -104,6 +105,12 @@ func (m paramMap) StringArray() []string {
 	return list
 }
 
+func (m paramMap) SetOSEnv() {
+	for key, value := range m {
+		os.Setenv(key, value)
+	}
+}
+
 func main() {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -129,7 +136,7 @@ func main() {
 		}, 0)
 
 		if sharedErr != nil {
-			fmt.Println("Error fetching shared params: ", sharedErr.Error())
+			log.Println("Error fetching shared params: ", sharedErr.Error())
 			os.Exit(1)
 		}
 
@@ -143,7 +150,7 @@ func main() {
 		}, 0)
 
 		if appErr != nil {
-			fmt.Println("Error fetching app params: ", appErr.Error())
+			log.Println("Error fetching app params: ", appErr.Error())
 			os.Exit(1)
 		}
 
@@ -153,12 +160,31 @@ func main() {
 	paramMap.AddParams(allParams)
 	paramMap.ReplaceInterpolations()
 
+	// Grab runner args
 	args := os.Args[1:]
+
+	// Set command to first arg
+
+	if len(args) == 0 {
+		log.Fatalln("ssm-loader requires a command to run")
+	}
+
 	cmd := exec.Command(args[0], args[1:]...)
+
+	// Pipe everything to the command
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = paramMap.StringArray()
-	cmd.Start()
-	cmd.Wait()
+
+	err := cmd.Start()
+	if err != nil {
+		log.Fatalln("Error while starting command: ", err)
+	}
+
+	err = cmd.Wait()
+
+	if err != nil {
+		log.Fatalln("Command finished with err: ", err)
+	}
 }
