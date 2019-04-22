@@ -1,5 +1,7 @@
 # Go Release Binary GitHub Action
 
+Derived from https://github.com/ngs/go-release.action
+
 Automate publishing Go build artifacts for GitHub releases through GitHub Actions
 
 ```hcl
@@ -15,7 +17,7 @@ workflow "Build" {
 }
 
 action "release darwin/amd64" {
-  uses = "ngs/go-release.action@v1.0.1"
+  uses = "./release/"
   env = {
     GOOS = "darwin"
     GOARCH = "amd64"
@@ -24,7 +26,7 @@ action "release darwin/amd64" {
 }
 
 action "release windows/amd64" {
-  uses = "ngs/go-release.action@v1.0.1"
+  uses = "./release/"
   env = {
     GOOS = "windows"
     GOARCH = "amd64"
@@ -33,7 +35,7 @@ action "release windows/amd64" {
 }
 
 action "release linux/amd64" {
-  uses = "ngs/go-release.action@v1.0.1"
+  uses = "./release/"
   env = {
     GOOS = "linux"
     GOARCH = "amd64"
