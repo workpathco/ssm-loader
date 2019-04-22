@@ -136,8 +136,7 @@ func main() {
 		}, 0)
 
 		if sharedErr != nil {
-			log.Println("Error fetching shared params: ", sharedErr.Error())
-			os.Exit(1)
+			log.Fatalln("Error fetching shared params: ", sharedErr.Error())
 		}
 
 		allParams = sharedParams
@@ -150,8 +149,7 @@ func main() {
 		}, 0)
 
 		if appErr != nil {
-			log.Println("Error fetching app params: ", appErr.Error())
-			os.Exit(1)
+			log.Fatalln("Error fetching app params: ", appErr.Error())
 		}
 
 		allParams = append(allParams, appParams...)
