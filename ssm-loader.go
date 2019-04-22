@@ -111,6 +111,15 @@ func (m paramMap) SetOSEnv() {
 	}
 }
 
+func contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
@@ -161,12 +170,31 @@ func main() {
 	// Grab runner args
 	args := os.Args[1:]
 
-	// Set command to first arg
-
-	if len(args) == 0 {
-		log.Fatalln("ssm-loader requires a command to run")
+	if len(args) == 0 || contains(args, "-h") || contains(args, "--help") {
+		fmt.Println("Loads parameters from the SSM Parameter Store")
+		fmt.Println("")
+		fmt.Println("Usage:")
+		fmt.Println("  ssm-loader [options] [command]")
+		fmt.Println("")
+		fmt.Println("Environment variables:")
+		fmt.Println("  APP_ENV (WORKPATH_ENV): The application's environment")
+		fmt.Println("  APP_NAME (optional): The name of the application")
+		fmt.Println("")
+		fmt.Println("Options:")
+		fmt.Println("  --help (-h): Shows this output")
+		fmt.Println("  -O: Prints the env to stdout (i.e. can combine with other commands [i.e. `export $(ssm-loader -O)`])")
+		os.Exit(0)
 	}
 
+	// If we have the output flag
+	if contains(args, "-O") {
+		for _, value := range paramMap.StringArray() {
+			fmt.Println(value)
+		}
+		os.Exit(0)
+	}
+
+	// Set command to first arg
 	cmd := exec.Command(args[0], args[1:]...)
 
 	// Pipe everything to the command
