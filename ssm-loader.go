@@ -155,7 +155,9 @@ func main() {
 
 	args := os.Args[1:]
 	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Env = paramMap.StringArray()
 	cmd.Start()
 	cmd.Wait()
