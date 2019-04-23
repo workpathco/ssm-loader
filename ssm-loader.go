@@ -171,18 +171,20 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 || contains(args, "-h") || contains(args, "--help") {
+		fmt.Println("")
+		fmt.Println("Usage:  ssm-loader [options] [command]")
+		fmt.Println("")
 		fmt.Println("Loads parameters from the SSM Parameter Store")
 		fmt.Println("")
-		fmt.Println("Usage:")
-		fmt.Println("  ssm-loader [options] [command]")
-		fmt.Println("")
-		fmt.Println("Environment variables:")
-		fmt.Println("  APP_ENV (WORKPATH_ENV): The application's environment")
-		fmt.Println("  APP_NAME (optional): The name of the application")
+		fmt.Println("Environment Variables:")
+		fmt.Println("  APP_ENV   The application's environment")
+		fmt.Println("  APP_NAME  The name of the application")
 		fmt.Println("")
 		fmt.Println("Options:")
-		fmt.Println("  --help (-h): Shows this output")
-		fmt.Println("  -O: Prints the env to stdout (i.e. can combine with other commands [i.e. `export $(ssm-loader -O)`])")
+		fmt.Println("  -h, --help  Shows this output")
+		fmt.Println("  -O          Prints the env to stdout")
+		// fmt.Println("  -a, --app   Application name (default \"$APP_NAME\"")
+		// fmt.Println("  -e, --env   Application environment (default \"$APP_ENV\"")
 		os.Exit(0)
 	}
 
